@@ -375,16 +375,15 @@ footer a{color:var(--brown)}
   <div class="wrap">
 
     <div class="thanks" id="thanks">
-      <h2>Ya casi</h2>
-      <p>Se te ha abierto WhatsApp con el mensaje escrito. Dale a enviar y te contesto hoy mismo.</p>
-      <p>Si no se te ha abierto, escríbeme desde el botón de aquí abajo.</p>
-      <p style="margin-top:20px"><a class="btn btn-main" href="#" data-wa style="width:auto;display:inline-flex">Abrir WhatsApp</a></p>
+      <h2>Recibido</h2>
+      <p>Te escribo hoy mismo al contacto que me has dejado.</p>
+      <p>Mientras tanto, respira. Casi todo lo que me contáis tiene solución.</p>
       <span class="hand">Un abrazo, Marina</span>
     </div>
 
     <form id="form" novalidate>
       <h2>Cuéntame tu caso</h2>
-      <p class="lead">Rellénalo en un minuto y se abre WhatsApp con todo escrito: solo tienes que darle a enviar. Te contesto hoy mismo.</p>
+      <p class="lead">Rellénalo en un minuto y te contesto hoy mismo. No hay compromiso ni te voy a insistir después.</p>
 
       <div class="picked-box" id="pickedBox">
         <b>Lo que has marcado arriba y me llegará contigo:</b>
@@ -435,7 +434,7 @@ footer a{color:var(--brown)}
       <input type="hidden" name="_subject" value="Nuevo contacto desde la web">
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
-      <button type="submit" class="btn btn-main" id="submit">Enviar por WhatsApp</button>
+      <button type="submit" class="btn btn-main" id="submit">Enviar</button>
 
       <p class="walink">Si lo prefieres, también puedes <a href="#" data-wa>escribirme por WhatsApp</a>.</p>
     </form>
@@ -509,7 +508,7 @@ const WHATSAPP = "34645495015";    // número para el enlace de WhatsApp
 // ENDPOINT por tu URL y listo.
 const ENDPOINT = "https://formsubmit.co/ajax/" + EMAIL;
 
-const TEXTO_BOTON = "Enviar por WhatsApp";
+const TEXTO_BOTON = "Enviar";
 const picked = new Set();
 
 document.querySelectorAll('[data-wa]').forEach(function(a){
