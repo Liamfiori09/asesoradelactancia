@@ -1,3 +1,50 @@
+document.getElementById('form').addEventListener('submit', function(e){
+  e.preventDefault();
+  const f = e.target, btn = document.getElementById('submit');
+
+  /* todos estos campos son obligatorios */
+  const falta = [];
+  if(!f.nombre.value.trim())   falta.push(f.nombre);
+  if(!f.contacto.value.trim()) falta.push(f.contacto);
+  if(!f.zona.value.trim())     falta.push(f.zona);
+  const momento = f.querySelector('input[name=momento]:checked');
+  const formato = f.querySelector('input[name=formato]:checked');
+
+  if(falta.length || !momento || !formato){
+    if(falta.length) falta[0].focus();
+    btn.textContent = "Rellena todos los campos";
+    setTimeout(function(){ btn.textContent = TEXTO_BOTON; }, 2400);
+    return;
+  }
+
+  const data = Object.fromEntries(new FormData(f).entries());
+
+  /* mensaje que se abre en WhatsApp ya escrito */
+  let msg = "Hola Marina, vengo de tu web.\n\n";
+  msg += "Nombre: " + data.nombre + "\n";
+  msg += "Contacto: " + data.contacto + "\n";
+  msg += "Momento: " + data.momento + "\n";
+  msg += "Prefiero: " + data.formato + "\n";
+  msg += "Población: " + data.zona + "\n";
+  if(data.sintomas) msg += "\nLo que me preocupa: " + data.sintomas + "\n";
+  if(data.mensaje && data.mensaje.trim()) msg += "\n" + data.mensaje.trim();
+
+  /* se abre AQUÍ, de forma síncrona, para que no lo bloquee el navegador */
+  window.open("https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+
+  if(window.fbq) fbq('track','Lead');
+
+  /* copia por email, por si no llega a darle a enviar en WhatsApp */
+  fetch(ENDPOINT, {
+    method:"POST",
+    headers:{"Content-Type":"application/json","Accept":"application/json"},
+    body: JSON.stringify(data)
+  }).catch(function(){});
+
+  f.classList.add('gone');
+  document.getElementById('thanks').classList.add('on');
+  document.getElementById('contacto').scrollIntoView({block:'start'});
+});
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -375,15 +422,16 @@ footer a{color:var(--brown)}
   <div class="wrap">
 
     <div class="thanks" id="thanks">
-      <h2>Recibido</h2>
-      <p>Te escribo hoy mismo al contacto que me has dejado.</p>
-      <p>Mientras tanto, respira. Casi todo lo que me contáis tiene solución.</p>
+      <h2>Ya casi</h2>
+      <p>Se te ha abierto WhatsApp con el mensaje escrito. Dale a enviar y te contesto hoy mismo.</p>
+      <p>Si no se te ha abierto, escríbeme desde el botón de aquí abajo.</p>
+      <p style="margin-top:20px"><a class="btn btn-main" href="#" data-wa style="width:auto;display:inline-flex">Abrir WhatsApp</a></p>
       <span class="hand">Un abrazo, Marina</span>
     </div>
 
     <form id="form" novalidate>
       <h2>Cuéntame tu caso</h2>
-      <p class="lead">Un minuto de nada y te contesto hoy mismo. No hay compromiso ni te voy a insistir después.</p>
+      <p class="lead">Rellénalo en un minuto y se abre WhatsApp con todo escrito: solo tienes que darle a enviar. Te contesto hoy mismo.</p>
 
       <div class="picked-box" id="pickedBox">
         <b>Lo que has marcado arriba y me llegará contigo:</b>
@@ -434,7 +482,7 @@ footer a{color:var(--brown)}
       <input type="hidden" name="_subject" value="Nuevo contacto desde la web">
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
-      <button type="submit" class="btn btn-main" id="submit">Enviar y que me escriba</button>
+      <button type="submit" class="btn btn-main" id="submit">Enviar por WhatsApp</button>
 
       <p class="walink">Si lo prefieres, también puedes <a href="#" data-wa>escribirme por WhatsApp</a>.</p>
     </form>
@@ -482,7 +530,7 @@ footer a{color:var(--brown)}
   <div class="wrap">
     <b>Marina López</b>
     <p>Asesora de lactancia y psicóloga<br>Barcelona y toda España por videollamada, según disponibilidad</p>
-    <p style="margin-top:12px"><a href="mailto:TU@EMAIL.COM">TU@EMAIL.COM</a> &nbsp;|&nbsp; <a href="#">Instagram</a></p>
+    <p style="margin-top:12px"><a href="mailto:marinalopezpsicologia@gmail.com">marinalopezpsicologia@gmail.com</a> &nbsp;|&nbsp; <a href="#">Instagram</a></p>
     <p class="flinks"><a href="#">Aviso legal</a> &nbsp;|&nbsp; <a href="#">Política de privacidad</a> &nbsp;|&nbsp; <a href="#">Cookies</a></p>
   </div>
 </footer>
@@ -496,7 +544,7 @@ footer a{color:var(--brown)}
 /* =====================================================================
    CONFIGURACIÓN — cambia solo estas dos líneas y la web queda operativa
    ===================================================================== */
-const EMAIL    = "TU@EMAIL.COM";   // dónde quieres recibir los formularios
+const EMAIL    = "marinalopezpsicologia@gmail.com";  // copia de seguridad por email
 const WHATSAPP = "34645495015";    // número para el enlace de WhatsApp
 /* ===================================================================== */
 
@@ -508,6 +556,7 @@ const WHATSAPP = "34645495015";    // número para el enlace de WhatsApp
 // ENDPOINT por tu URL y listo.
 const ENDPOINT = "https://formsubmit.co/ajax/" + EMAIL;
 
+const TEXTO_BOTON = "Enviar por WhatsApp";
 const picked = new Set();
 
 document.querySelectorAll('[data-wa]').forEach(function(a){
